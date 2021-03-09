@@ -12,8 +12,8 @@ def create_sudoku(a):
             G.add_node((row+1,column+1))
 
     # give nodes attributes.
-    node_values = 0
-    nx.set_node_attributes(G, node_values, "numbers")
+    attribute = 0
+    nx.set_node_attributes(G, attribute, "numbers")
 
     #creates edges b/w nodes in same row and same column
     for node in G.nodes():
@@ -81,19 +81,16 @@ def check_neighbors(G,node):
     # print(list(G.neighbors(node)))
     # print(list(map(lambda x: G.nodes[x]["numbers"],list(G.neighbors(node)))))
     return max(list(map(lambda x: G.nodes[x]["numbers"],list(G.neighbors(node)))))
+#
+# def check_sudoku(G):
+#     pass
 
-def check_sudoku(G):
-    pass
 
-# def print_sudoku(G):
-#     for n in G.nodes()
-#         return
 if __name__ == "__main__":
     G = create_sudoku(3.0)
-
+    # d = nx.coloring.equitable_color(G, num_colors=9)
+    # print(list(G.nodes()))
     G = sud_helper(G)
     print(nx.get_node_attributes(G, "numbers"))
-    # print(list(G.nodes()))
-    # G, r = solve_sudoku(G)
     # nx.draw(G, with_labels = True)
     # plt.show()
