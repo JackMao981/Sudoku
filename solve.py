@@ -19,10 +19,10 @@ def solver(G,a):
     while not_complete(nc,a):
     #step 1
         for n in G.nodes():
-            if n not in chosen and nc.has_key(n):
+            if n not in chosen and n in nc.keys():
                 #step 2
                 for edge in G.edges(n):
-                    if not ec.has_key(edge):
+                    if edge not in ec.keys():
                         ec[edge] = nc[n]
             chosen.add(n)
             break;
@@ -37,7 +37,7 @@ def solver(G,a):
     return nc
 
 def not_complete(nc,a):
-    return len(nc) != a**4
+    return len(nc.keys()) != a**4
 
 def max_colored_degree(ec,nc):
 
@@ -45,13 +45,15 @@ def max_colored_degree(ec,nc):
 #ec - has a list of edges, let's find the node that shows up the most in ec that isn't colored
 #if there is a tie, then we just pick one
     how_many = {}
+    if ec == {}:
+        return (1,1)
     for (n1,n2) in ec.keys():
-        if not nc.has_key(n1):
-            if how_many[n1] == None:
+        if n1 not in nc.keys():
+            if n1 not in how_many:
                 how_many[n1] = 0
             how_many[n1] = how_many[n1] + 1
-        if not nc.has_key(n2):
-            if how_many[n2] == None:
+        if n2 not in nc.keys():
+            if n2 not in how_many:
                 how_many[n2] = 0
             how_many[n2] = how_many[n2] + 1
     #find maximum value in how_many and return its key, if tie just pick one
@@ -61,15 +63,16 @@ def max_colored_degree(ec,nc):
 
 def min_color_available(ec,max_n,a):
     bad_color = set()
-    colors = set([i+1 for i in range(a*a)])
+    colors = set([i+1 for i in range(int(a*a))])
 
     for k in ec.keys():
         if max_n in k:
-            bad_color = bad_color.add(ec[k])
+            bad_color.add(ec[k])
     colors = colors - bad_color
-    if len(bad_color) == 0:
-        print("we're f*****ed")
-        return -1
+    for color in colors:
+        if color > 9:
+            print("we're f*****ed")
+            return -1
     return min(colors)
 
 # def check_sudoku(nc):
@@ -77,11 +80,12 @@ def min_color_available(ec,max_n,a):
 
 if __name__ == "__main__":
     a = 3.0
-    # G = create_sudoku(a)
+    G = create_sudoku(a)
     # G = fill_presets(G, [(1,1,1)])
+    nc = solver(G,a)
+    print(nc)
 
-    print(not_complete({3:1,2:2},2))
-    # G.nodes[(5,5)]["numbers"].append(5)
-    # print(max_vertex(G))
-    # for n in G.nodes():
-    #     print(G.nodes[n]["numbers"])
+    # ec = {(1,2):1,(1,3):1,(1,4):1,(3,2):2, (4,2):3}
+    # nc = {1:1,3:5}
+    # max_n = max_colored_degree(ec, nc)
+    # print(min_color_available(ec, max_n, a))
