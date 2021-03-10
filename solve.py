@@ -69,9 +69,10 @@ def min_color_available(ec,max_n,a):
         if max_n in k:
             bad_color.add(ec[k])
     colors = colors - bad_color
-    if len(bad_color) == 0:
-        print("we're f*****ed")
-        return -1
+    for color in colors:
+        if color > 9:
+            print("we're f*****ed")
+            return -1
     return min(colors)
 
 # def check_sudoku(nc):
