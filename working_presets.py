@@ -75,21 +75,31 @@ def solve_sudoku(G,a):
 
 
 def sud_helper(H,node,total_vertices,nc,given,preset):
+    #if all vertices have been gone through and checked to be safe, return true and print the outputs
     if node == total_vertices+1:
         max_color = max(nc.values())
         print(max_color)
         print(nc)
         return True
+
+    #else iterate through each color per node and see what works
     for color in range(1,10):
-        if node in given and nc[node] == color: 
-            nc[node] = color
+        #if the node is a preset and it equals the color it should be, set the color and call sud_helper on next node
+        if node in given and preset[node] == color: 
+            nc[node] = color 
+            #if it returns true, then return true and break the loop
             if sud_helper(H,node+1,total_vertices,nc,given,preset):
                 return True 
-            nc[node] = preset[node]
+            #otherwise reset the color and try the next color
+            nc[node] = 0
+        
+        #if a safe configuration, set the color and call sud_helper on next node
         if node not in given and check_neighbors(H,node,nc,color+1):
             nc[node] = color
+            #if it returns true, then return true and break the loop
             if sud_helper(H,node+1,total_vertices,nc,given,preset):
                 return True    
+            #otherwise reset the color and try the next color
             nc[node] = 0
     return False
 
