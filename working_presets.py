@@ -1,7 +1,7 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
-
+import copy
 def create_sudoku(a):
     #creates graph
     G = nx.Graph()
@@ -32,16 +32,110 @@ def create_sudoku(a):
 
     return G
 
-# numbers is a list of tuples (x, y, number)
-def fill_presets(numbers):
-#first we need to fill out pre-set colors
-    d = {}
-    for (x,n) in numbers:
-       d[x] = n
-    return d
+# fills is a list of vals for each of the nodes places
+def fill_presets(fills):
+    given = [] #indices of existing colors on the sudoku board
+    nc = {}
+    for i, pre in enumerate(fills):
+        if pre != 0:
+            given.append(i+1)
+            nc[i+1] = pre
+    print(nc,'nc')
+    return nc, given
 
-def solve_sudoku(G,a):
-    presets = [0,0,0,4,0,0,0,0,0,
+def solve_sudoku(G,a,fills):
+    nc, given = fill_presets(fills)
+    preset = copy.deepcopy(nc)
+    H = nx.convert_node_labels_to_integers(G, first_label=1)
+    not_presets = list(set(H.nodes()) - set(preset.keys()))
+    index = 0
+    total_vertices = int(a**4)
+    return sud_helper(H,not_presets,index,total_vertices,nc,preset)
+
+
+def sud_helper(H,not_presets,index,total_vertices,nc,preset):
+    #print(node,'node')
+    #if all vertices have been gone through and checked to be safe, return true and print the outputs
+        #max_color = max(nc.values())
+    if 0 not in nc.values() and len(nc.values())==81:
+        return True, nc
+
+    node = not_presets[index]
+    #else iterate through each color per node and see what works
+    for color in range(1,10):
+
+        #if a safe configuration, set the color and call sud_helper on next node
+        if check_safe(H,node,nc,color,preset):
+            nc[node] = color
+            #if it returns true, then return true and break the loop
+            if sud_helper(H,not_presets,index+1,total_vertices,nc,preset)[0]:
+                return True, nc
+            #otherwise reset the color and try the next color
+            nc[node] = 0
+
+    return False, nc
+
+
+def check_safe(H,node,nc,color,preset):
+    #checks neighbors
+    for neigh in H.neighbors(node):
+        if neigh in nc.keys():
+            if nc[neigh] == color:
+                return False
+    return True
+
+def check_sudoku(solved):
+    rows = {}
+    columns = {}
+    quadrants = {}
+    for k in solved.keys():
+        row = np.ceil(k/9.0)
+        column = (k%9)
+        if column == 0:
+            column = 9
+        if row not in rows.keys():
+            rows[row] = set()
+        rows[row].add(solved[k])
+        if column not in columns.keys():
+            columns[column] = set()
+        columns[column].add(solved[k])
+
+        quadx = np.ceil(row/3.0)
+        quady = np.ceil(column/3.0)
+
+        if (quadx,quady) not in quadrants.keys():
+            quadrants[(quadx,quady)] = set()
+        quadrants[(quadx,quady)].add(solved[k])
+
+    result = True
+    for r in rows.keys():
+        if len(rows[r]) != 9:
+            print(rows[r], r, 'rows')
+            result = False
+    for c in columns.keys():
+        if len(columns[c]) != 9:
+            print(columns[c], c,'c')
+            result = False
+    for q in quadrants.keys():
+        if len(quadrants[q]) != 9:
+            print(quadrants[q], q, 'quad')
+            result = False
+    return result
+
+if __name__ == "__main__":
+    a = 3.0
+    # fully filled -- true
+    # fills = [8,2,7,1,5,4,3,9,6,
+    #         9,6,5,3,2,7,1,4,8,
+    #         3,4,1,6,8,9,7,5,2,
+    #         5,9,3,4,6,8,2,7,1,
+    #         4,7,2,5,1,3,6,8,9,
+    #         6,1,8,9,7,2,4,3,5,
+    #         7,8,6,2,3,5,9,1,4,
+    #         1,5,4,7,9,6,8,2,3,
+    #         2,3,9,8,4,1,5,6,7]
+    # presets -- ??
+    fills = [0,0,0,4,0,0,0,0,0,
             4,0,9,0,0,6,8,7,0,
             0,0,0,9,0,0,1,0,0,
             5,0,4,0,2,0,0,0,9,
@@ -50,70 +144,12 @@ def solve_sudoku(G,a):
             0,0,1,0,0,7,0,0,0,
             0,4,3,2,0,0,6,0,5,
             0,0,0,0,0,5,0,0,0]
-    fills = []
-    given = []
-    preset = {}
-    for i in range (len(presets)):
-        if presets[i] != 0:
-            given.append(i+1)
-            preset[i+1] = presets[i]
-            fills.append((i+1,presets[i]))
-    nc = fill_presets(fills)
-    #fill_presets([(1,1,1),(1,5,4),(2,1,4),(2,5,8),(2,8,3),(2,9,6),(3,5,7),(3,7,9),(4,1,2),(4,3,7),(4,6,8),(4,8,6),(5,6,4),(5,8,8),(6,3,1),(6,6,5),(6,8,2),(6,9,4),(7,5,5),(7,7,3),(8,2,6),(8,3,3),(8,4,1),(9,1,7)])
-    # mapping = {}
-    # i = 0
-    # for n in G.nodes():
-    #     i +=1
-    #     mapping[n] = i
-    H = nx.convert_node_labels_to_integers(G, first_label=1)
-    # print(H.nodes())
-    #print(G.nodes())
-    node = 1
-    total_vertices = int(a**4)
-    return sud_helper(H,node,total_vertices,nc,given,preset)
-
-
-
-def sud_helper(H,node,total_vertices,nc,given,preset):
-    #if all vertices have been gone through and checked to be safe, return true and print the outputs
-    if node == total_vertices+1:
-        max_color = max(nc.values())
-        print(max_color)
-        print(nc)
-        return True
-
-    #else iterate through each color per node and see what works
-    for color in range(1,10):
-        #if the node is a preset and it equals the color it should be, set the color and call sud_helper on next node
-        if node in given and preset[node] == color: 
-            nc[node] = color 
-            #if it returns true, then return true and break the loop
-            if sud_helper(H,node+1,total_vertices,nc,given,preset):
-                return True 
-            #otherwise reset the color and try the next color
-            nc[node] = 0
-        
-        #if a safe configuration, set the color and call sud_helper on next node
-        if node not in given and check_neighbors(H,node,nc,color+1):
-            nc[node] = color
-            #if it returns true, then return true and break the loop
-            if sud_helper(H,node+1,total_vertices,nc,given,preset):
-                return True    
-            #otherwise reset the color and try the next color
-            nc[node] = 0
-    return False
-
-
-# check if any neighbors are same color
-def check_neighbors(H,node,nc,color):
-    for neigh in H.neighbors(node):
-        if neigh in nc.keys():
-            if nc[neigh] == color:
-                return False
-    return True
-
-
-if __name__ == "__main__":
-    a = 3.0
+    # empty -- false
+    # fills = [0] * 81
     G = create_sudoku(a)
-    print(solve_sudoku(G,a))
+    result, solved = solve_sudoku(G,a,fills)
+    print(solved, "solved")
+    # print(solved)
+    # for k in sorted(solved.keys()):
+    #     print(k,": ", solved[k])
+    print(check_sudoku(solved))
