@@ -1,7 +1,7 @@
 # Sudoku
-Advanced Algorithm: Sudoku Solver
+Advanced Algorithms: Sudoku Solver
 
-This repo is for Lab 1 of the course Advanced Algorithms: Proving Sudoku is NP-complete. In our report, we walked through a proof where k-colorability is NP-complete, and that converting a n^2 x n^2 Sudoku board (where n represents a section of the board) to a graph format, Sudoku can be colored in n^2 colors, and therefore, is NP-complete.
+This repo is for Lab 1 of the course Advanced Algorithms: Proving Sudoku is NP-complete. In our report, we walked through a proof where k-colorability is NP-complete, and that converting a n x n Sudoku board (where n represents a unit of the board) to a graph format, Sudoku can be colored in n colors, and therefore, is NP-complete.
 
 Our code is the implementation of our proof and creates a graph representation of a 9 x 9 Sudoku board. By proving this graph is 9-colorable, this Sudoku game can be satisfied since each of the nine colors represent a number from 1 through 9.
 
