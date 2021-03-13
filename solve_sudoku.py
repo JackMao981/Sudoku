@@ -11,10 +11,6 @@ def create_sudoku(a):
         for column in range(int(a*a)):
             G.add_node((row+1,column+1))
 
-    # give nodes attributes.
-    #attribute = 0
-    #nx.set_node_attributes(G, attribute, "numbers")
-
     #creates edges b/w nodes in same row and same column
     for node in G.nodes():
         for node1 in G.nodes():
@@ -40,7 +36,6 @@ def fill_presets(fills):
         if pre != 0:
             given.append(i+1)
             nc[i+1] = pre
-    print(nc,'nc')
     return nc, given
 
 def solve_sudoku(G,a,fills):
@@ -54,9 +49,6 @@ def solve_sudoku(G,a,fills):
 
 
 def sud_helper(H,not_presets,index,total_vertices,nc,preset):
-    #print(node,'node')
-    #if all vertices have been gone through and checked to be safe, return true and print the outputs
-        #max_color = max(nc.values())
     if 0 not in nc.values() and len(nc.values())==81:
         return True, nc
 
@@ -110,30 +102,20 @@ def check_sudoku(solved):
     result = True
     for r in rows.keys():
         if len(rows[r]) != 9:
-            print(rows[r], r, 'rows')
+            # print(rows[r], r, 'rows')
             result = False
     for c in columns.keys():
         if len(columns[c]) != 9:
-            print(columns[c], c,'c')
+            # print(columns[c], c,'c')
             result = False
     for q in quadrants.keys():
         if len(quadrants[q]) != 9:
-            print(quadrants[q], q, 'quad')
+            # print(quadrants[q], q, 'quad')
             result = False
     return result
 
 if __name__ == "__main__":
     a = 3.0
-    # fully filled -- true
-    # fills = [8,2,7,1,5,4,3,9,6,
-    #         9,6,5,3,2,7,1,4,8,
-    #         3,4,1,6,8,9,7,5,2,
-    #         5,9,3,4,6,8,2,7,1,
-    #         4,7,2,5,1,3,6,8,9,
-    #         6,1,8,9,7,2,4,3,5,
-    #         7,8,6,2,3,5,9,1,4,
-    #         1,5,4,7,9,6,8,2,3,
-    #         2,3,9,8,4,1,5,6,7]
     # presets -- True
     fills = [0,0,0,4,0,0,0,0,0,
             4,0,9,0,0,6,8,7,0,
@@ -144,22 +126,6 @@ if __name__ == "__main__":
             0,0,1,0,0,7,0,0,0,
             0,4,3,2,0,0,6,0,5,
             0,0,0,0,0,5,0,0,0]
-    # empty
-    # fills = [0] * 81
-    # presets -- that is not a soln
-    # fills = [0,0,0,4,4,0,0,0,0,
-    #         4,0,9,0,0,6,8,7,0,
-    #         0,0,0,9,0,0,1,0,0,
-    #         5,0,4,0,2,0,0,0,9,
-    #         0,7,0,8,0,4,0,6,0,
-    #         6,0,0,0,3,0,5,0,2,
-    #         0,0,1,0,0,7,0,0,0,
-    #         0,4,3,2,0,0,6,0,5,
-    #         0,0,0,0,0,5,0,0,0]
     G = create_sudoku(a)
     result, solved = solve_sudoku(G,a,fills)
-    print(solved, "solved")
-    # print(solved)
-    # for k in sorted(solved.keys()):
-    #     print(k,": ", solved[k])
     print(check_sudoku(solved))
