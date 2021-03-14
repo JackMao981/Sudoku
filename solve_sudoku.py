@@ -2,6 +2,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
 import copy
+
 def create_sudoku(a):
     #creates graph
     G = nx.Graph()
@@ -28,7 +29,7 @@ def create_sudoku(a):
 
     return G
 
-# fills is a list of vals for each of the nodes places
+# fills is a list of values for each of the nodes places
 def fill_presets(fills):
     given = [] #indices of existing colors on the sudoku board
     nc = {}
@@ -45,10 +46,10 @@ def solve_sudoku(G,a,fills):
     not_presets = list(set(H.nodes()) - set(preset.keys()))
     index = 0
     total_vertices = int(a**4)
-    return sud_helper(H,not_presets,index,total_vertices,nc,preset)
+    return sud_helper(H,not_presets,index,total_vertices,nc)
 
 
-def sud_helper(H,not_presets,index,total_vertices,nc,preset):
+def sud_helper(H,not_presets,index,total_vertices,nc):
     if 0 not in nc.values() and len(nc.values())==81:
         return True, nc
 
@@ -57,10 +58,10 @@ def sud_helper(H,not_presets,index,total_vertices,nc,preset):
     for color in range(1,10):
 
         #if a safe configuration, set the color and call sud_helper on next node
-        if check_safe(H,node,nc,color,preset):
+        if check_safe(H,node,nc,color):
             nc[node] = color
             #if it returns true, then return true and break the loop
-            if sud_helper(H,not_presets,index+1,total_vertices,nc,preset)[0]:
+            if sud_helper(H,not_presets,index+1,total_vertices,nc)[0]:
                 return True, nc
             #otherwise reset the color and try the next color
             nc[node] = 0
@@ -68,7 +69,7 @@ def sud_helper(H,not_presets,index,total_vertices,nc,preset):
     return False, nc
 
 
-def check_safe(H,node,nc,color,preset):
+def check_safe(H,node,nc,color):
     #checks neighbors
     for neigh in H.neighbors(node):
         if neigh in nc.keys():
@@ -113,19 +114,3 @@ def check_sudoku(solved):
             # print(quadrants[q], q, 'quad')
             result = False
     return result
-
-if __name__ == "__main__":
-    a = 3.0
-    # presets -- True
-    fills = [0,0,0,4,0,0,0,0,0,
-            4,0,9,0,0,6,8,7,0,
-            0,0,0,9,0,0,1,0,0,
-            5,0,4,0,2,0,0,0,9,
-            0,7,0,8,0,4,0,6,0,
-            6,0,0,0,3,0,5,0,2,
-            0,0,1,0,0,7,0,0,0,
-            0,4,3,2,0,0,6,0,5,
-            0,0,0,0,0,5,0,0,0]
-    G = create_sudoku(a)
-    result, solved = solve_sudoku(G,a,fills)
-    print(check_sudoku(solved))
