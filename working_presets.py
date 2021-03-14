@@ -2,6 +2,10 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
 import copy
+
+# this is our implementation for making an empty sudoku board
+# we create a nx Graph with 81 edges, where each edge represents a node on the
+# sudoku board
 def create_sudoku(a):
     #creates graph
     G = nx.Graph()
@@ -10,10 +14,6 @@ def create_sudoku(a):
     for row in range(int(a*a)):
         for column in range(int(a*a)):
             G.add_node((row+1,column+1))
-
-    # give nodes attributes.
-    #attribute = 0
-    #nx.set_node_attributes(G, attribute, "numbers")
 
     #creates edges b/w nodes in same row and same column
     for node in G.nodes():
@@ -32,7 +32,8 @@ def create_sudoku(a):
 
     return G
 
-# fills is a list of vals for each of the nodes places
+# sudoku usually comes with some pre-existing numbers on the board. we
+# fill them in with a length 81 array.
 def fill_presets(fills):
     given = [] #indices of existing colors on the sudoku board
     nc = {}
@@ -43,6 +44,7 @@ def fill_presets(fills):
     print(nc,'nc')
     return nc, given
 
+# this function attempts to solve the sudoku by calling sud_helper
 def solve_sudoku(G,a,fills):
     nc, given = fill_presets(fills)
     preset = copy.deepcopy(nc)
@@ -52,7 +54,7 @@ def solve_sudoku(G,a,fills):
     total_vertices = int(a**4)
     return sud_helper(H,not_presets,index,total_vertices,nc,preset)
 
-
+# this is a recursive graph coloring algorithm
 def sud_helper(H,not_presets,index,total_vertices,nc,preset):
     #print(node,'node')
     #if all vertices have been gone through and checked to be safe, return true and print the outputs
@@ -75,7 +77,9 @@ def sud_helper(H,not_presets,index,total_vertices,nc,preset):
 
     return False, nc
 
-
+# checks if the neighbors of the current node has the same as color as the color that
+# we are attempting color the current node with. If no such neighbor exists, return
+# true
 def check_safe(H,node,nc,color,preset):
     #checks neighbors
     for neigh in H.neighbors(node):
@@ -84,11 +88,13 @@ def check_safe(H,node,nc,color,preset):
                 return False
     return True
 
+# checks if the "solved" sudoku board is a valid solution
 def check_sudoku(solved):
     rows = {}
     columns = {}
     quadrants = {}
     for k in solved.keys():
+        # we first convert 1-81 into row column indices using division and modulus
         row = np.ceil(k/9.0)
         column = (k%9)
         if column == 0:
@@ -100,6 +106,9 @@ def check_sudoku(solved):
             columns[column] = set()
         columns[column].add(solved[k])
 
+        # There are 9 "quadrants" in sudoku that have to fulfill the condition
+        # of having integers 1-9 in them. We the index of these quadrants of
+        # a particular node by dividing their row column index by 3, rounding up
         quadx = np.ceil(row/3.0)
         quady = np.ceil(column/3.0)
 
@@ -108,6 +117,8 @@ def check_sudoku(solved):
         quadrants[(quadx,quady)].add(solved[k])
 
     result = True
+
+    # checks whether rows, columns, or quadrants are valid. 
     for r in rows.keys():
         if len(rows[r]) != 9:
             print(rows[r], r, 'rows')
