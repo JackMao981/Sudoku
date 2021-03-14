@@ -34,7 +34,7 @@ def solve_sudoku(G,a):
     H = nx.convert_node_labels_to_integers(G, first_label=1) #converts node labels 1-81
     node = 1
     total_vertices = int(a**4)
-    return sud_helper(H,node,total_vertices,nc) 
+    return sud_helper(H,node,total_vertices,nc)
 
 
 
@@ -51,7 +51,7 @@ def sud_helper(H,node,total_vertices,nc):
         if check_neighbors(H,node,nc,color): #if a safe configuration, set the color and call sud_helper on next node
             nc[node] = color
             if sud_helper(H,node+1,total_vertices,nc): #if it returns true, then return true and break the loop
-                return True 
+                return True
             nc[node] = 0  #otherwise reset the color of the node and try the next color
     return False #if coloring not possible return false
 

@@ -3,9 +3,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import copy
 
+<<<<<<< HEAD:working_presets.py
 # this is our implementation for making an empty sudoku board
 # we create a nx Graph with 81 edges, where each edge represents a node on the
 # sudoku board
+=======
+>>>>>>> d2b0d13e637343c7d537839280d4f42091669689:solve_sudoku.py
 def create_sudoku(a):
     #creates graph
     G = nx.Graph()
@@ -32,8 +35,12 @@ def create_sudoku(a):
 
     return G
 
+<<<<<<< HEAD:working_presets.py
 # sudoku usually comes with some pre-existing numbers on the board. we
 # fill them in with a length 81 array.
+=======
+# fills is a list of values for each of the nodes places
+>>>>>>> d2b0d13e637343c7d537839280d4f42091669689:solve_sudoku.py
 def fill_presets(fills):
     given = [] #indices of existing colors on the sudoku board
     nc = {}
@@ -41,7 +48,6 @@ def fill_presets(fills):
         if pre != 0:
             given.append(i+1)
             nc[i+1] = pre
-    print(nc,'nc')
     return nc, given
 
 # this function attempts to solve the sudoku by calling sud_helper
@@ -52,13 +58,18 @@ def solve_sudoku(G,a,fills):
     not_presets = list(set(H.nodes()) - set(preset.keys()))
     index = 0
     total_vertices = int(a**4)
-    return sud_helper(H,not_presets,index,total_vertices,nc,preset)
+    return sud_helper(H,not_presets,index,total_vertices,nc)
 
+<<<<<<< HEAD:working_presets.py
 # this is a recursive graph coloring algorithm
 def sud_helper(H,not_presets,index,total_vertices,nc,preset):
     #print(node,'node')
     #if all vertices have been gone through and checked to be safe, return true and print the outputs
         #max_color = max(nc.values())
+=======
+
+def sud_helper(H,not_presets,index,total_vertices,nc):
+>>>>>>> d2b0d13e637343c7d537839280d4f42091669689:solve_sudoku.py
     if 0 not in nc.values() and len(nc.values())==81:
         return True, nc
 
@@ -67,20 +78,25 @@ def sud_helper(H,not_presets,index,total_vertices,nc,preset):
     for color in range(1,10):
 
         #if a safe configuration, set the color and call sud_helper on next node
-        if check_safe(H,node,nc,color,preset):
+        if check_safe(H,node,nc,color):
             nc[node] = color
             #if it returns true, then return true and break the loop
-            if sud_helper(H,not_presets,index+1,total_vertices,nc,preset)[0]:
+            if sud_helper(H,not_presets,index+1,total_vertices,nc)[0]:
                 return True, nc
             #otherwise reset the color and try the next color
             nc[node] = 0
 
     return False, nc
 
+<<<<<<< HEAD:working_presets.py
 # checks if the neighbors of the current node has the same as color as the color that
 # we are attempting color the current node with. If no such neighbor exists, return
 # true
 def check_safe(H,node,nc,color,preset):
+=======
+
+def check_safe(H,node,nc,color):
+>>>>>>> d2b0d13e637343c7d537839280d4f42091669689:solve_sudoku.py
     #checks neighbors
     for neigh in H.neighbors(node):
         if neigh in nc.keys():
@@ -118,59 +134,17 @@ def check_sudoku(solved):
 
     result = True
 
-    # checks whether rows, columns, or quadrants are valid.
+    # checks whether rows, columns, or quadrants are valid. 
     for r in rows.keys():
         if len(rows[r]) != 9:
-            print(rows[r], r, 'rows')
+            # print(rows[r], r, 'rows')
             result = False
     for c in columns.keys():
         if len(columns[c]) != 9:
-            print(columns[c], c,'c')
+            # print(columns[c], c,'c')
             result = False
     for q in quadrants.keys():
         if len(quadrants[q]) != 9:
-            print(quadrants[q], q, 'quad')
+            # print(quadrants[q], q, 'quad')
             result = False
     return result
-
-if __name__ == "__main__":
-    a = 3.0
-    # fully filled -- true
-    # fills = [8,2,7,1,5,4,3,9,6,
-    #         9,6,5,3,2,7,1,4,8,
-    #         3,4,1,6,8,9,7,5,2,
-    #         5,9,3,4,6,8,2,7,1,
-    #         4,7,2,5,1,3,6,8,9,
-    #         6,1,8,9,7,2,4,3,5,
-    #         7,8,6,2,3,5,9,1,4,
-    #         1,5,4,7,9,6,8,2,3,
-    #         2,3,9,8,4,1,5,6,7]
-    # presets -- True
-    fills = [0,0,0,4,0,0,0,0,0,
-            4,0,9,0,0,6,8,7,0,
-            0,0,0,9,0,0,1,0,0,
-            5,0,4,0,2,0,0,0,9,
-            0,7,0,8,0,4,0,6,0,
-            6,0,0,0,3,0,5,0,2,
-            0,0,1,0,0,7,0,0,0,
-            0,4,3,2,0,0,6,0,5,
-            0,0,0,0,0,5,0,0,0]
-    # empty
-    # fills = [0] * 81
-    # presets -- that is not a soln
-    # fills = [0,0,0,4,4,0,0,0,0,
-    #         4,0,9,0,0,6,8,7,0,
-    #         0,0,0,9,0,0,1,0,0,
-    #         5,0,4,0,2,0,0,0,9,
-    #         0,7,0,8,0,4,0,6,0,
-    #         6,0,0,0,3,0,5,0,2,
-    #         0,0,1,0,0,7,0,0,0,
-    #         0,4,3,2,0,0,6,0,5,
-    #         0,0,0,0,0,5,0,0,0]
-    G = create_sudoku(a)
-    result, solved = solve_sudoku(G,a,fills)
-    print(solved, "solved")
-    # print(solved)
-    # for k in sorted(solved.keys()):
-    #     print(k,": ", solved[k])
-    print(check_sudoku(solved))
