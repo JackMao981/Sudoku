@@ -5,15 +5,17 @@ def assert_true(fills):
     result, solved = solve_sudoku(G,a,fills)
     try:
         assert check_sudoku(solved) == True
+        print("It worked, this Sudoku is correctly solved")
     except AssertionError:
-        print("It failed")
+        print("It failed, this Sudoku is colored incorrectly")
 
 def assert_false(fills):
     result, solved = solve_sudoku(G,a,fills)
     try:
         assert check_sudoku(solved) == False
+        print("As expected, this Sudoku cannot be solved")
     except AssertionError:
-        print("It failed")
+        print("It failed, this Sudoku should not be solvable")
 
 def test_full(a):
     '''
@@ -29,6 +31,7 @@ def test_full(a):
             7,8,6,2,3,5,9,1,4,
             1,5,4,7,9,6,8,2,3,
             2,3,9,8,4,1,5,6,7]
+    print("full:")
     assert_true(fills)
 
 def test_partial(a):
@@ -45,6 +48,7 @@ def test_partial(a):
             0,0,1,0,0,7,0,0,0,
             0,4,3,2,0,0,6,0,5,
             0,0,0,0,0,5,0,0,0]
+    print("partial:")
     assert_true(fills)
 
 def test_empty(a):
@@ -53,6 +57,7 @@ def test_empty(a):
     '''
     # empty
     fills = [0] * 81
+    print("empty:")
     assert_true(fills)
 
 def test_not_feasible(a):
@@ -69,6 +74,7 @@ def test_not_feasible(a):
             0,0,1,0,0,7,0,0,0,
             0,4,3,2,0,0,6,0,5,
             0,0,0,0,0,5,0,0,0]
+    print("not feasible:")
     assert_false(fills)
 
 if __name__ == "__main__":
